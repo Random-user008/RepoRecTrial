@@ -9,32 +9,7 @@ import numpy as np
 # import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings('ignore')
-# import seaborn as sns
-# from sklearn.model_selection import train_test_split
-# from sklearn.preprocessing import StandardScaler
-# from sklearn.feature_selection import RFE
-# from sklearn.ensemble import RandomForestClassifier
-# from sklearn.model_selection import RandomizedSearchCV
-# from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
-# from sklearn.decomposition import PCA, KernelPCA
-# from sklearn.tree import DecisionTreeClassifier
-# from sklearn import tree
-# from sklearn.svm import SVC
-# from sklearn.neighbors import KNeighborsClassifier
-# from sklearn.pipeline import Pipeline
-# from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classification_report
-# from sklearn.metrics import accuracy_score
-# from sklearn.metrics import precision_score
-# from sklearn.metrics import recall_score
-# from sklearn.metrics import f1_score
-# from sklearn.metrics import roc_auc_score
-# from sklearn.metrics import cohen_kappa_score
-# from sklearn import metrics
-# from sklearn.model_selection import GridSearchCV
-# from sklearn.naive_bayes import GaussianNB
-# from sklearn.metrics import roc_curve, auc
-# from sklearn.metrics import roc_auc_score
-# import pickle
+
 
     # st.title(f"Welcome to GitHub Project Recommendation System And User Analytics")
 st.set_page_config(
