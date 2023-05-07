@@ -14,16 +14,24 @@ st.set_page_config(
     page_title="GitHub Project Recommendation System",
     page_icon="GitHub-icon.png",
 )
-components.html("""
-     <style>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative&display=swap');</style>
-    <h1 style="color:ZBlack;font-family: 'Cinzel Decorative', cursive;
-font-size:30px">Enter the details to Recommend Projects</h1>    """,height=100,width=700)
+# components.html("""
+#      <style>
+# @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative&display=swap');</style>
+#     <h1 style="color:ZBlack;font-family: 'Cinzel Decorative', cursive;
+# font-size:30px">Enter the details to Recommend Projects</h1>    """,height=100,width=700)
 # Username = st.text_input('Enter GitHub Username')
 # st.write("UserName Entered is: ",Username)
 # time.sleep(8)
 # st.write("LOADING... ")
 
+st.markdown("""
+<style>
+body {
+    background-color: #1E1E1E;
+    color: #FFFFFF;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # Load data
 df = pd.DataFrame()
@@ -80,29 +88,29 @@ COLUMNS_TO_REMOVE_LIST = ['', 'Username', 'Repository Name', 'Description',
 
 df.columns = df.columns.str.lower()
 
-print("Our final label matrix for repo list is")
-# st.write(df.head(2))
+# print("Our final label matrix for repo list is")
+# # st.write(df.head(2))
 
-# Apply LDA to extract topics from
+# # Apply LDA to extract topics from
 
-text_data = df_backup['Description'].astype(str)
-tokens = [simple_preprocess(str(desc), deacc=True) for desc in text_data]
-tokens = [[word for word in doc if word not in STOPWORDS] for doc in tokens]
+# text_data = df_backup['Description'].astype(str)
+# tokens = [simple_preprocess(str(desc), deacc=True) for desc in text_data]
+# tokens = [[word for word in doc if word not in STOPWORDS] for doc in tokens]
 
-dictionary = corpora.Dictionary(tokens)
-corpus = [dictionary.doc2bow(doc) for doc in tokens]
+# dictionary = corpora.Dictionary(tokens)
+# corpus = [dictionary.doc2bow(doc) for doc in tokens]
 
-lda_model = models.LdaModel(corpus=corpus, id2word=dictionary, num_topics=10, random_state=100,
-                            chunksize=1000, passes=50, iterations=100, per_word_topics=True)
+# lda_model = models.LdaModel(corpus=corpus, id2word=dictionary, num_topics=10, random_state=100,
+#                             chunksize=1000, passes=50, iterations=100, per_word_topics=True)
 
-# Extracting topics
-topics = lda_model.show_topics(formatted=False)
-topics = [(topic[0], [t[0] for t in topic[1]]) for topic in topics]
+# # Extracting topics
+# topics = lda_model.show_topics(formatted=False)
+# topics = [(topic[0], [t[0] for t in topic[1]]) for topic in topics]
 
-# Displaying the topics
-st.write("These are the extracted topics from the repository descriptions:")
-for topic in topics:
-    st.write(f"Topic {topic[0]}: {', '.join(topic[1])}")
+# # Displaying the topics
+# st.write("These are the extracted topics from the repository descriptions:")
+# for topic in topics:
+#     st.write(f"Topic {topic[0]}: {', '.join(topic[1])}")
 
 # Create a function to recommend projects
 def recommend_projects(input_tags, num_projects=5):
@@ -122,6 +130,16 @@ def recommend_projects(input_tags, num_projects=5):
         Dataframe containing the recommended projects.
     """
     input_tags = [tag.lower() for tag in input_tags]
+    for i in input_tags:
+        if(i not in df.columns):
+            input_tags.remove(i)
+            components.html("""
+     <style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');</style>
+    <h2 style="color:ZBlack;font-family: 'Roboto Mono', monospace;
+font-size:20px">%s Tag Not found!!</h2>    """%i,height=60,width=700)
+    if(len(input_tags)<1):
+        return False
     tag_matrix = df[input_tags]
     tag_count = tag_matrix.sum(axis=1)
     project_scores = tag_count.sort_values(ascending=False)
@@ -136,7 +154,7 @@ def recommend_projects(input_tags, num_projects=5):
 components.html("""
      <style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');</style>
-    <h2 style="color:ZBlack;font-family: 'Roboto Mono', monospace;
+    <h2 style="color:White;font-family: 'Roboto Mono', monospace;
 font-size:20px">Fill out the form to get project recommendations:</h2>    """,height=60,width=700)
 
 input_tags = st.text_input('Enter tags (comma separated)')
@@ -144,8 +162,52 @@ num_projects = st.slider('Number of projects to recommend', min_value=1, max_val
 if st.button('Recommend'):
     input_tags = input_tags.split(',')
     recommended_projects = recommend_projects(input_tags, num_projects)
-    if recommended_projects.empty:
-        st.write('No projects found with these tags')
+    # st.write(recommended_projects.size)
+    if type(recommended_projects) == bool :
+        components.html("""
+        <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');</style>
+        <h2 style="color:White;font-family: 'Roboto Mono', monospace;
+    font-size:20px">No projects with given input tags!! Please Retry </h2>    """,height=60,width=700)
+        # exit()
     else:
-        st.write(recommended_projects)
+        if recommended_projects.empty:
+            st.write("Repositories not found !! Retry")
+        else:
+            for i in range(len(recommended_projects)):
+                components.html(""" <style>@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&display=swap');</style>
+                                        <a href="%s" class="data-card" target="_blank" style="display: flex;
+                                                                                            flex-direction: column;
+                                                                                            max-width: 20.75em;
+                                                                                            min-height: 20.75em;
+                                                                                            overflow: hidden;
+                                                                                            border-radius: 15px;
+                                                                                            text-decoration: none;
+                                                                                            background: #219F94;
+                                                                                            margin: 1em;
+                                                                                            padding: 2.75em 2.5em;
+                                                                                            box-shadow: 0 1.5em 2.5em -.5em rgba(#000000, .1);
+                                                                                            transition: transform .45s ease, background .45s ease">
+                
+                                        <h3 style="color: white;word-wrap:break-word;
+                                        font-size: 2.1em;
+                                        font-weight: 600;
+                                        line-height: 1;
+                                        padding-bottom: .5em;
+                                        margin: 0 0 0.142857143em;
+                                        border-bottom: 2px solid white;
+                                        transition: color .45s ease, border .45s ease;">%s</h3>
+                                        <p style="color: white;word-wrap:break-word;
+                                                    font-size:1.25em;
+                                                    font-weight: 600;
+                                                    line-height: 1.8;
+                                                    margin: 0 0 1.25em;
+                                                    ">%s</p>
+                                        <span class="link-text" style="color:white;" >
+                                            View 
+                                            <svg style="margin-left:0.5em;transition: transform .6s ease;" width="25" height="16" viewBox="0 0 25 16" fill="#FFFFFF" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17.8631 0.929124L24.2271 7.29308C24.6176 7.68361 24.6176 8.31677 24.2271 8.7073L17.8631 15.0713C17.4726 15.4618 16.8394 15.4618 16.4489 15.0713C16.0584 14.6807 16.0584 14.0476 16.4489 13.657L21.1058 9.00019H0.47998V7.00019H21.1058L16.4489 2.34334C16.0584 1.95281 16.0584 1.31965 16.4489 0.929124C16.8394 0.538599 17.4726 0.538599 17.8631 0.929124Z" fill="white"/>
+                                        </svg>
+                                            </span>
+                                        </a>"""%(recommended_projects.iloc[i,1],recommended_projects.iloc[i,0],recommended_projects.iloc[i,5]),height=500,width=500)
 

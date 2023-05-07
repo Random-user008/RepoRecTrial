@@ -15,10 +15,10 @@ from sklearn.decomposition import NMF
 
 
 components.html("""
-     <style>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative&display=swap');</style>
-    <h1 style="color:ZBlack;font-family: 'Cinzel Decorative', cursive;
-font-size:30px">Enter the details to Recommend Projects</h1>    """,height=100,width=700)
+        <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');</style>
+        <h2 style="color:White;font-family: 'Roboto Mono', monospace;
+    font-size:20px">Enter the details to Recommend Projects </h2>    """,height=60,width=700)
 
 # Define vectorizer with desired parameters
 vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
@@ -141,9 +141,9 @@ def recommend_repos(username):
     calinski_harabasz_avg = calinski_harabasz_score(feature_matrix, cluster_labels)
     db_index = davies_bouldin_score(feature_matrix, cluster_labels)
 
-    st.write("Calinski-Harabasz index:", calinski_harabasz_avg)
-    st.write("silhouette score:"+ str(silhouette_avg))
-    st.write(f"Davies-Bouldin index: {db_index}")
+    # st.write("Calinski-Harabasz index:", calinski_harabasz_avg)
+    # st.write("silhouette score:"+ str(silhouette_avg))
+    # st.write(f"Davies-Bouldin index: {db_index}")
 
 
     # Get the indices of the top recommended repositories
@@ -154,7 +154,42 @@ def recommend_repos(username):
         if(index<len(top_repos_data)):
             if cluster_labels[index] == -1:
                 continue
-            st.write(f"{top_repos_data.iloc[index]['name']} --- ({top_repos_data.iloc[index]['description']}) --- {top_repos_data.iloc[index]['url']}")
+            # st.write(f"{top_repos_data.iloc[index]['name']} --- ({top_repos_data.iloc[index]['description']}) --- {top_repos_data.iloc[index]['url']}")
+            components.html(""" <style>@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&display=swap');</style>
+                                        <a href="%s" class="data-card" target="_blank" style="display: flex;
+                                                                                            flex-direction: column;
+                                                                                            max-width: 20.75em;
+                                                                                            min-height: 20.75em;
+                                                                                            overflow: hidden;
+                                                                                            border-radius: 15px;
+                                                                                            text-decoration: none;
+                                                                                            background: #219F94;
+                                                                                            margin: 1em;
+                                                                                            padding: 2.75em 2.5em;
+                                                                                            box-shadow: 0 1.5em 2.5em -.5em rgba(#000000, .1);
+                                                                                            transition: transform .45s ease, background .45s ease">
+                
+                                        <h3 style="color: white;word-wrap:break-word;
+                                        font-size: 2.1em;
+                                        font-weight: 600;
+                                        line-height: 1;
+                                        padding-bottom: .5em;
+                                        margin: 0 0 0.142857143em;
+                                        border-bottom: 2px solid white;
+                                        transition: color .45s ease, border .45s ease;">%s</h3>
+                                        <p style="color: white;word-wrap:break-word;
+                                                    font-size:1.25em;
+                                                    font-weight: 600;
+                                                    line-height: 1.8;
+                                                    margin: 0 0 1.25em;
+                                                    ">%s</p>
+                                        <span class="link-text" style="color:white;" >
+                                            View 
+                                            <svg style="margin-left:0.5em;transition: transform .6s ease;" width="25" height="16" viewBox="0 0 25 16" fill="#FFFFFF" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M17.8631 0.929124L24.2271 7.29308C24.6176 7.68361 24.6176 8.31677 24.2271 8.7073L17.8631 15.0713C17.4726 15.4618 16.8394 15.4618 16.4489 15.0713C16.0584 14.6807 16.0584 14.0476 16.4489 13.657L21.1058 9.00019H0.47998V7.00019H21.1058L16.4489 2.34334C16.0584 1.95281 16.0584 1.31965 16.4489 0.929124C16.8394 0.538599 17.4726 0.538599 17.8631 0.929124Z" fill="white"/>
+                                        </svg>
+                                            </span>
+                                        </a>"""%(top_repos_data.iloc[index]['url'],top_repos_data.iloc[index]['name'],top_repos_data.iloc[index]['description']),height=500,width=500)
 
 with st.form(key = "form1"):
      Username = st.text_input('Enter GitHub Username')
